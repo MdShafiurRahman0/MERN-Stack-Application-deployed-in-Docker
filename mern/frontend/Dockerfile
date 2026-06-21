@@ -1,23 +1,28 @@
-# Use the official image as a parent image
-# Description: Dockerfile for the client side of the MERN stack application
+# =========================
+# Stage 1: Build Stage
+# =========================
+FROM node:18.9.1 AS builder
 
-# Use the official image as a parent image
-FROM node:18.9.1
-
-# Set the working directory
 WORKDIR /app
 
-# Copy the file from your host to your current location
-COPY package.json .
+COPY package*.json ./
 
-# Run the command inside your image filesystem
 RUN npm install
 
-# Inform Docker that the container is listening on the specified port at runtime
-EXPOSE 5173
-
-# Copy the rest of your app's source code from your host to your image filesystem
 COPY . .
 
-# Run the specified command within the container
-CMD ["npm", "run", "dev"]
+RUN npm run build
+
+
+# =========================
+# Stage 2: Nginx Serve Stage
+# =========================
+FROM nginx:alpine
+
+RUN rm -rf /usr/share/nginx/html/*
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
