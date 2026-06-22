@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+
+  # ======================
+  # MongoDB Service
+  # ======================
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  # ======================
+  # Backend Service
+  # ======================
+  backend:
+    build: ./backend
+    container_name: backend
+    restart: always
+    ports:
+      - "5050:5050"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017
+
+  # ======================
+  # Frontend Service
+  # ======================
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    restart: always
+    ports:
+      - "5178:80"
+    depends_on:
+      - backend
+
+# ======================
+# Volumes
+# ======================
+volumes:
+  mongo_data:
