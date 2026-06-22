@@ -15,7 +15,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: admin123
 
   backend:
-    build: ./backend
+    build: ./mern/backend
     container_name: backend
     restart: always
     ports:
@@ -23,10 +23,10 @@ services:
     depends_on:
       - mongodb
     environment:
-      - MONGO_URL=mongodb://admin:admin123@mongodb:27017/mydb?authSource=admin
+      MONGO_URL: mongodb://admin:admin123@mongodb:27017/mydb?authSource=admin
 
   frontend:
-    build: ./frontend
+    build: ./mern/frontend
     container_name: frontend
     restart: always
     ports:
